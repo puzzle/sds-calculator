@@ -66,7 +66,7 @@ body {
   gap: 12px;
 }
 /* Zusaetzlicher Abstand nach Frage 0, damit sie sich abhebt */
-.checklist .row[data-q="0"] { margin-bottom: 12px; }
+.checklist .row:first-child { margin-bottom: 12px; }
 
 .index-circle {
   width: 28px; height: 28px; border-radius: 50%;
@@ -173,8 +173,15 @@ button.value.mark-caret::after {
   line-height: 1.35;
   opacity: 0.9;
 }
-.notes .num { font-weight: 700; margin-right: 6px; }
-.notes p { margin: 6px 0; }
+
+.notes .num {
+  flex: 0 0 auto;
+}
+.notes p {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
 
 .copy {
   display: grid;

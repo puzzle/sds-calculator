@@ -13,20 +13,16 @@
         <img src="baselstab.svg" alt="Baselstab" class="logo">
         <div class="divider"></div>
         <h1 class="title">Digitale Souveränität - Checkliste & Berechnung<sup class="sup">1</sup></h1>
-        <div class="columns-head" aria-hidden="true">
-          <span class="col ja">Ja</span>
-          <span class="col nein">Nein</span>
-        </div>
       </header>
 
       <div class="rule-top" aria-hidden="true"></div>
 
       <section class="checklist">
-        <div class="row" data-q="0" role="group" aria-labelledby="q0-label">
+        <div class="row" role="group" aria-labelledby="q0-label">
           <div class="index-circle">0</div>
-          <div id="q0-label" class="question-box">Gibt es eine reale Alternative für die entsprechende Software?<sup class="sup">2</sup></div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">1</button>
-          <button type="button" class="value no" data-value="1" aria-pressed="false" aria-label="Nein, Wert 1. Keine weitere Berechnung.">0</button>
+          <div class="question-box">Gibt es eine reale Alternative für die entsprechende Software?<sup class="sup">2</sup></div>
+          <button type="button" class="value yes" data-value="0" aria-pressed="false" aria-label="Ja, Wert 1">Ja</button>
+          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 1. Keine weitere Berechnung.">Nein</button>
         </div>
 
         <!-- Duenne Linie unter Frage 0, ggf. mit unterbrochenem Segment und kleinem Pfeil unter "Ja" (5) -->
@@ -38,43 +34,51 @@
         </svg>
 
 
-        <div class="row" data-q="1" role="group" aria-labelledby="q1-label">
+        <div class="row" role="group">
           <div class="index-circle">1</div>
-          <div id="q1-label" class="question-box">Ist der Firmensitz des Anbieters in der Schweiz/EU?<sup class="sup">3</sup></div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">1</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">0</button>
+          <div class="question-box">Ist der Firmensitz des Anbieters in der Schweiz/EU?<sup class="sup">3</sup></div>
+          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">Ja</button>
+          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">Nein</button>
         </div>
 
 
-        <div class="row" data-q="2" role="group" aria-labelledby="q2-label">
+        <div class="row" role="group">
           <div class="index-circle">2</div>
-          <div id="q2-label" class="question-box">Handelt es sich um Open Source Software?</div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">1</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">0</button>
+          <div class="question-box">Werden die Daten ausschliesslich in der Schweiz/EU gespeichert und verarbeitet?<sup class="sup">4</sup></div>
+          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">Ja</button>
+          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">Nein</button>
         </div>
 
 
-        <div class="row" data-q="3" role="group" aria-labelledby="q3-label">
+        <div class="row" role="group">
           <div class="index-circle">3</div>
-          <div id="q3-label" class="question-box">Besteht Support für Security Updates des Anbieters?<sup class="sup">4</sup></div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">1</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">0</button>
+          <div class="question-box">Handelt es sich um Open Source Software?<sup class="sup">5</sup></div>
+          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">Ja</button>
+          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">Nein</button>
         </div>
 
 
-        <div class="row" data-q="4" role="group" aria-labelledby="q4-label">
+        <div class="row" role="group">
           <div class="index-circle">4</div>
-          <div id="q4-label" class="question-box">Nutzt die Software ausschliesslich standardisierte Schnittstellen.</div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">1</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">0</button>
+          <div class="question-box">Besteht Support für Security Updates des Anbieters?<sup class="sup">6</sup></div>
+          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">Ja</button>
+          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">Nein</button>
         </div>
 
 
-        <div class="row" data-q="5" role="group" aria-labelledby="q5-label">
+        <div class="row" role="group">
           <div class="index-circle">5</div>
-          <div id="q5-label" class="question-box">Nutzt die Software ausschliesslich standardisierte Dateiformate?</div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">1</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">0</button>
+          <div class="question-box">Nutzt die Software ausschliesslich standardisierte Schnittstellen.<sup class="sup">7</sup></div>
+          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">Ja</button>
+          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">Nein</button>
+        </div>
+
+
+        <div class="row" role="group">
+          <div class="index-circle">6</div>
+          <div class="question-box">Nutzt die Software ausschliesslich standardisierte Dateiformate?<sup class="sup">8</sup></div>
+          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja, Wert 1">Ja</button>
+          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein, Wert 0">Nein</button>
         </div>
       </section>
 
@@ -99,10 +103,35 @@
       </section>
 
       <section class="notes" aria-label="Fussnoten">
-        <p><span class="num">1)</span> 0 als Ergebnis ist rechnerisch möglich, dann ist der Score 1, 'niedrig souverän'.</p>
-        <p><span class="num">2)</span> Der Anbieter ist kein Monopolist (&lt; 50% Marktanteil) und es existiert derzeit eine Enterprise Software mit ähnlicher Funktionalität, zu der mit angemessenem Kosten und Aufwand gewechselt werden kann, oder eine Eigenentwicklung einer solchen Software ist mit vertretbaren Kosten und Aufwand möglich.</p>
-        <p><span class="num">3)</span> Des Mutterkonzerns des Softwareherstellers bzw. Cloud Service</p>
-        <p><span class="num">4)</span> Z.B. im Rahmen eines Lifecyclemanagements</p>
+
+        <p><span class="num">1)</span>0 als Ergebnis ist rechnerisch möglich, dann ist der Score 1, 'niedrig souverän'.</p>
+
+        <p><span class="num">2)</span>Der Anbieter ist kein Monopolist (&lt; 50% Marktanteil) und es existiert derzeit
+          eine Software mit ähnlicher Funktionalität, zu der mit angemessenem Kosten und Aufwand gewechselt
+          werden kann, oder eine Eigenentwicklung einer solchen Software ist mit vertretbaren Kosten und Aufwand
+          möglich. Existiert keine Alternative, dann ist der Score immer 1.</p>
+
+        <p><span class="num">3)</span>Massgebend ist der Sitz des Mutterkonzerns, falls der Anbieter eine Tochtergesellschaft ist.</p>
+
+        <p><span class="num">4)</span>Speicherung und Verarbeitung erfolgen ausschliesslich auf Infrastruktur in der
+          Schweiz/EU. Damit unterliegen die Daten Schweizer/EU-Recht und nicht dem Zugriff durch Drittstaaten (z.B. US
+          Cloud Act).</p>
+
+        <p><span class="num">5)</span>Der Quellcode ist öffentlich einsehbar und darf von Dritten geprüft, verändert
+          und weiterverwendet werden. Dies schafft Unabhängigkeit vom Hersteller und ermöglicht bei Bedarf eine
+          Weiterentwicklung durch Dritte.</p>
+
+        <p><span class="num">6)</span>Z.B. im Rahmen eines Lifecyclemanagements</p>
+
+        <p><span class="num">7)</span>Daten und Funktionen können über offene, dokumentierte Schnittstellen (APIs)
+          angebunden werden, statt über proprietäre, herstellerspezifische Protokolle. Das erleichtert die Integration
+          mit anderen Systemen und reduziert Abhängigkeiten.</p>
+
+        <p><span class="num">8)</span>Daten werden in offenen, weit verbreiteten Formaten gespeichert (z.B. statt
+          proprietärer Formate). Das stellt sicher, dass Daten auch mit anderer Software weiterverwendet werden können.
+        </p>
+
+
       </section>
     </main>
     <script src="index.js"></script>

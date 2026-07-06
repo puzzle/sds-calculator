@@ -17,10 +17,11 @@
   const paramByQuestion = {
     0: 'alt',
     1: 'head',
-    2: 'os',
-    3: 'sup',
-    4: 'api',
-    5: 'dat'
+    2: 'res',
+    3: 'os',
+    4: 'sup',
+    5: 'api',
+    6: 'dat'
   };
 
   function currentUrl() {
@@ -29,9 +30,9 @@
 
   function syncUrl() {
     const url = currentUrl();
-
     for (const row of rows) {
-      const param = paramByQuestion[row.dataset.q];
+
+      const param = paramByQuestion[row.querySelector('.index-circle').textContent];
       if (!param) continue;
 
       const selected = state.get(row);
@@ -62,7 +63,7 @@
     }
 
     for (const row of rows) {
-      const param = paramByQuestion[row.dataset.q];
+      const param = paramByQuestion[row.querySelector('.index-circle').textContent];
       if (!param) continue;
 
       const value = url.searchParams.get(param);
@@ -132,7 +133,7 @@
 
   function calcScore() {
     // Sonderlogik: Frage 0 entscheidet, ob berechnet wird oder direkt 1 gesetzt wird.
-    const row0 = document.querySelector('.checklist .row[data-q="0"]');
+    const row0 = document.querySelector('.checklist .row:first-child');
     const yes0 = row0 ? row0.querySelector('.value.yes') : null;
     const no0 = row0 ? row0.querySelector('.value.no') : null;
     const connector = document.getElementById('connector');
@@ -208,7 +209,7 @@
     const svg = document.getElementById('connector');
     const path = document.getElementById('connectorPath');
     const head = document.getElementById('connectorHead');
-    const row0 = document.querySelector('.checklist .row[data-q="0"] .value.no');
+    const row0 = document.querySelector('.checklist .row:first-child .value.no');
     const box = document.querySelector('.score-box');
     if (!svg || !path || !head || !row0 || !box) return;
     const a = row0.getBoundingClientRect();
@@ -252,7 +253,7 @@
 
   // Linie/Pfeil unter Frage 0 vorbereiten
   function drawQ0LineAndArrow() {
-    const row0 = document.querySelector('.checklist .row[data-q="0"]');
+    const row0 = document.querySelector('.checklist .row:first-child');
     const yes0 = row0 ? row0.querySelector('.value.yes') : null;
     const overlay = document.getElementById('q0overlay');
     const lineFull = document.getElementById('q0LineFull');
@@ -310,15 +311,18 @@
   window.addEventListener('load', drawQ0LineAndArrow);
   drawQ0LineAndArrow();
 
-  for (const row of rows) {
+  for (const [index, row] of rows.entries()) {
+    const label = row.querySelector('.question-box');
+    label.id = `q${index + 1}`;
+    row.setAttribute('aria-labelledby', label.id);
     row.addEventListener('click', (e) => {
       const el = (e.target instanceof Element) ? e.target : null;
       const target = el ? el.closest('button.value') : null;
       if (!target || !row.contains(target)) return;
       select(row, target);
       // Linie/Pfeil bei Frage 0 ggf. aktualisieren
-      if (row.dataset.q === '0') drawQ0LineAndArrow();
+      if (row.matches(':first-child')) drawQ0LineAndArrow();
     });
-    // Buttons reagieren bereits auf Enter/Space; keine doppelte Keydown-Logik noetig
+    // Buttons reagieren bereits auf Enter/Space; keine doppelte Keydown-Logik nötig
   }
 })();
