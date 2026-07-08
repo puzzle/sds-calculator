@@ -1,139 +1,74 @@
 <!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Checkliste & Berechnung - SDS</title>
-    <link rel="stylesheet" href="index.css" />
-  </head>
-  <body>
-    <main class="sheet">
-      <header class="sheet-header">
-        <!-- Baselstab SVG -->
-        <img src="baselstab.svg" alt="Baselstab" class="logo">
-        <div class="divider"></div>
-        <h1 class="title">Digitale Souveränität - Checkliste & Berechnung<sup class="sup">1</sup></h1>
-      </header>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Digitale Souveränität - Checkliste & Berechnung</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <main class="sheet" aria-labelledby="page-title">
+    <header class="sheet__header">
+      <img class="sheet__logo" src="baselstab.svg" alt="Kanton Basel-Stadt">
+      <span class="sheet__divider" aria-hidden="true"></span>
+      <div class="sheet__title-group">
+        <h1 class="sheet__title" id="page-title">Digitale Souveränität - Checkliste & Berechnung</h1>
+      </div>
+    </header>
 
-      <div class="rule-top" aria-hidden="true"></div>
+    <section class="form-section" aria-labelledby="software-label">
+      <div class="software-name">
+        <span></span>
+        <label class="software-name__label" for="softwareName" id="software-label">Name der geprüften Software</label>
+        <input class="software-name__input" id="softwareName" name="softwareName" type="text" autocomplete="off">
+      </div>
+    </section>
 
-      <section class="checklist">
-        <div class="row" role="group" aria-labelledby="q0-label">
-          <div class="index-circle">0</div>
-          <div class="question-box">Gibt es eine reale Alternative für die entsprechende Software?<sup class="sup">2</sup></div>
-          <button type="button" class="value yes" data-value="0" aria-pressed="false" aria-label="Ja">Ja</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein. Keine weitere Berechnung.">Nein</button>
-        </div>
+    <section class="calculator" aria-describedby="page-description">
+      <div class="calculator__head" aria-hidden="true">
+        <span></span>
+        <span>Dimension</span>
+        <span>Frage</span>
+        <span class="answer-head">Antwort</span>
+      </div>
 
-        <!-- Duenne Linie unter Frage 0, ggf. mit unterbrochenem Segment und kleinem Pfeil unter "Ja" (5) -->
-        <svg id="q0overlay" class="connector" aria-hidden="true">
-          <path id="q0LineFull" d="" />
-          <path id="q0LineLeft" d="" style="display:none" />
-          <path id="q0LineRight" d="" style="display:none" />
-          <polygon id="q0Arrow" class="arrow-head" points="0,0 0,0 0,0" fill="#ffffff" style="display:none" />
-        </svg>
+      <form class="questions" id="questionsForm" aria-label="Fragen zur digitalen Souveränität"></form>
+    </section>
 
+    <section class="score" aria-labelledby="score-title" aria-live="polite">
+      <div>
+        <h2 class="score__title" id="score-title">Score der Digitalen Souveränität (SDS)</h2>
+        <p class="score__meta" id="scoreMeta">0 von 100 gewichteten Punkten</p>
+      </div>
+      <output class="score__box" id="scoreNumber" for="questionsForm">1</output>
+      <p class="score__label" id="scoreLabel"></p>
+    </section>
 
-        <div class="row" role="group">
-          <div class="index-circle">1</div>
-          <div class="question-box">Ist der Firmensitz des Anbieters in der Schweiz/EU?<sup class="sup">3</sup></div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja">Ja</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein">Nein</button>
-        </div>
+    <section class="share" id="shareSection" aria-label="Link teilen">
+      <button class="button button--secondary" id="copyLink" type="button">Link kopieren</button>
+      <span class="share__status" id="copyStatus" role="status" aria-live="polite"></span>
+    </section>
 
+    <section class="notes" aria-labelledby="notes-title">
+      <h2 class="notes__title" id="notes-title">Hinweise</h2>
+      <ol class="notes__list" id="notesList"></ol>
+    </section>
+  </main>
 
-        <div class="row" role="group">
-          <div class="index-circle">2</div>
-          <div class="question-box">Werden die Daten ausschliesslich in der Schweiz/EU gespeichert und verarbeitet?<sup class="sup">4</sup></div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja">Ja</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein">Nein</button>
-        </div>
+  <template id="questionTemplate">
+    <fieldset class="question-card">
+      <legend class="sr-only"></legend>
+      <span class="question-card__index" aria-hidden="true"></span>
+      <span class="question-card__dimension"></span>
+      <div class="question-card__question">
+        <span class="question-card__text"></span>
+        <span class="question-card__weight"></span>
+        <p class="question-card__help"></p>
+      </div>
+      <div class="question-card__answers"></div>
+    </fieldset>
+  </template>
 
-
-        <div class="row" role="group">
-          <div class="index-circle">3</div>
-          <div class="question-box">Handelt es sich um Open Source Software?<sup class="sup">5</sup></div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja">Ja</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein">Nein</button>
-        </div>
-
-
-        <div class="row" role="group">
-          <div class="index-circle">4</div>
-          <div class="question-box">Besteht Support für Security Updates des Anbieters?<sup class="sup">6</sup></div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja">Ja</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein">Nein</button>
-        </div>
-
-
-        <div class="row" role="group">
-          <div class="index-circle">5</div>
-          <div class="question-box">Nutzt die Software ausschliesslich standardisierte Schnittstellen.<sup class="sup">7</sup></div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja">Ja</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein">Nein</button>
-        </div>
-
-
-        <div class="row" role="group">
-          <div class="index-circle">6</div>
-          <div class="question-box">Nutzt die Software ausschliesslich standardisierte Dateiformate?<sup class="sup">8</sup></div>
-          <button type="button" class="value yes" data-value="1" aria-pressed="false" aria-label="Ja">Ja</button>
-          <button type="button" class="value no" data-value="0" aria-pressed="false" aria-label="Nein">Nein</button>
-        </div>
-      </section>
-
-      <!-- Verbindungspfeil von Zeile 0 / Nein -> Score -->
-      <svg id="connector" class="connector" aria-hidden="true">
-        <path id="connectorPath" d="" />
-        <polygon id="connectorHead" class="arrow-head" points="0,0 0,0 0,0 0,0 0,0 0,0 0,0" fill="#ffffff" />
-      </svg>
-
-      <section class="score">
-        <div id="scoreLabel" class="score-label">Score der Digitalen Souveränität (SDS)</div>
-        <div class="score-box" role="status" aria-live="polite" aria-atomic="true" aria-labelledby="scoreLabel scoreNumber"><span id="scoreNumber" class="score-number">1</span></div>
-        <div class="score-line" aria-hidden="true"></div>
-      </section>
-
-      <section class="copy">
-        <div class="software-name">
-          <label for="softwareName">Name der geprüften Software</label>
-          <input id="softwareName" name="name" type="text" autocomplete="off" aria-label="Softwarename"/>
-        </div>
-        <button id="copyLink" class="copy-link" type="button" aria-label="Link mit aktueller Bewertung und Softwarename kopieren">Link kopieren</button>
-      </section>
-
-      <section class="notes" aria-label="Fussnoten">
-
-        <p><span class="num">1)</span>0 als Ergebnis ist rechnerisch möglich, dann ist der Score 1, 'niedrig souverän'.</p>
-
-        <p><span class="num">2)</span>Der Anbieter ist kein Monopolist (&lt; 50% Marktanteil) und es existiert derzeit
-          eine Software mit ähnlicher Funktionalität, zu der mit angemessenem Kosten und Aufwand gewechselt
-          werden kann, oder eine Eigenentwicklung einer solchen Software ist mit vertretbaren Kosten und Aufwand
-          möglich. Existiert keine Alternative, dann ist der Score immer 1.</p>
-
-        <p><span class="num">3)</span>Massgebend ist der Sitz des Mutterkonzerns, falls der Anbieter eine Tochtergesellschaft ist.</p>
-
-        <p><span class="num">4)</span>Speicherung und Verarbeitung erfolgen ausschliesslich auf Infrastruktur in der
-          Schweiz/EU. Damit unterliegen die Daten Schweizer/EU-Recht und nicht dem Zugriff durch Drittstaaten (z.B. US
-          Cloud Act).</p>
-
-        <p><span class="num">5)</span>Der Quellcode ist öffentlich einsehbar und darf von Dritten geprüft, verändert
-          und weiterverwendet werden. Dies schafft Unabhängigkeit vom Hersteller und ermöglicht bei Bedarf eine
-          Weiterentwicklung durch Dritte.</p>
-
-        <p><span class="num">6)</span>Z.B. im Rahmen eines Lifecyclemanagements</p>
-
-        <p><span class="num">7)</span>Daten und Funktionen können über offene, dokumentierte Schnittstellen (APIs)
-          angebunden werden, statt über proprietäre, herstellerspezifische Protokolle. Das erleichtert die Integration
-          mit anderen Systemen und reduziert Abhängigkeiten.</p>
-
-        <p><span class="num">8)</span>Daten werden in offenen, weit verbreiteten Formaten gespeichert (z.B. statt
-          proprietärer Formate). Das stellt sicher, dass Daten auch mit anderer Software weiterverwendet werden können.
-        </p>
-
-
-      </section>
-    </main>
-    <script src="index.js"></script>
-  </body>
-  </html>
+  <script src="index.js" defer></script>
+</body>
+</html>

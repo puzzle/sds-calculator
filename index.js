@@ -1,51 +1,180 @@
-// Interaktion für die statische SDS-Seite: Klicks auf Ja/Nein summieren und Score anzeigen
 (function () {
-  const rows = Array.from(document.querySelectorAll('.checklist .row'));
-  const scoreEl = document.getElementById('scoreNumber');
-  // Wenn die Seite in einem iFrame eingebunden ist, die "copy"-Sektion entfernen
-  // (früh im Ablauf, bevor Referenzen auf deren Elemente geholt werden)
-  try {
-    if (window.top !== window.self) {
-      const copySection = document.querySelector('section.copy');
-      if (copySection) copySection.remove();
-    }
-  } catch (_) {
-    // Bei Zugriffsbeschränkungen (Cross-Origin) vorsichtshalber nichts tun
-  }
-  const softwareNameEl = document.getElementById('softwareName');
-  const copyLinkBtn = document.getElementById('copyLink');
-  const paramByQuestion = {
-    0: 'alt',
-    1: 'head',
-    2: 'res',
-    3: 'os',
-    4: 'sup',
-    5: 'api',
-    6: 'dat'
+  const CONFIG_URL = './questions.json';
+  const elements = {
+    title: document.getElementById('page-title'),
+    form: document.getElementById('questionsForm'),
+    template: document.getElementById('questionTemplate'),
+    softwareName: document.getElementById('softwareName'),
+    scoreNumber: document.getElementById('scoreNumber'),
+    scoreMeta: document.getElementById('scoreMeta'),
+    scoreLabel: document.getElementById('scoreLabel'),
+    notesList: document.getElementById('notesList'),
+    copyLink: document.getElementById('copyLink'),
+    copyStatus: document.getElementById('copyStatus'),
+    shareSection: document.getElementById('shareSection')
   };
+
+  let config = null;
+
+  init();
+
+  async function init() {
+    try {
+      config = await loadConfig();
+      renderPage(config);
+      applyUrlParams(config);
+      updateScore(config);
+      bindEvents(config);
+    } catch (error) {
+      elements.form.innerHTML = '<p role="alert">Die Fragen konnten nicht geladen werden.</p>';
+      console.error(error);
+    }
+  }
+
+  async function loadConfig() {
+    const response = await fetch(CONFIG_URL, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`Config konnte nicht geladen werden: ${response.status}`);
+    }
+    return response.json();
+  }
+
+  function renderPage(data) {
+    document.title = data.title || document.title;
+    elements.title.textContent = data.title || elements.title.textContent;
+
+    elements.form.replaceChildren(...data.questions.map((question, index) => renderQuestion(question, index, data.answers)));
+    elements.notesList.replaceChildren(...(data.notes || []).map(renderNote));
+
+    try {
+      if (window.top !== window.self && elements.shareSection) {
+        elements.shareSection.remove();
+      }
+    } catch (_) {
+      // Cross-Origin-Frames sollen die Seite nicht brechen.
+    }
+  }
+
+  function renderQuestion(question, index, answers) {
+    const fragment = elements.template.content.cloneNode(true);
+    const fieldset = fragment.querySelector('.question-card');
+    const indexEl = fragment.querySelector('.question-card__index');
+    const dimensionEl = fragment.querySelector('.question-card__dimension');
+    const legendEl = fragment.querySelector('legend');
+    const textEl = fragment.querySelector('.question-card__text');
+    const weightEl = fragment.querySelector('.question-card__weight');
+    const helpEl = fragment.querySelector('.question-card__help');
+    const answersEl = fragment.querySelector('.question-card__answers');
+
+    fieldset.dataset.questionId = question.id;
+    legendEl.textContent = `${index + 1}. ${question.dimension}: ${question.text}`;
+    indexEl.textContent = String(index + 1);
+    dimensionEl.textContent = question.dimension;
+    textEl.textContent = question.text;
+    weightEl.textContent = `${question.weight} % Gewicht`;
+    helpEl.textContent = question.help || '';
+    helpEl.id = `help-${question.id}`;
+    fieldset.setAttribute('aria-describedby', helpEl.id);
+
+    answers.forEach((answer) => {
+      answersEl.appendChild(renderAnswer(question, answer));
+    });
+
+    return fieldset;
+  }
+
+  function renderAnswer(question, answer) {
+    const wrapper = document.createElement('div');
+    const input = document.createElement('input');
+    const label = document.createElement('label');
+    const inputId = `${question.id}-${answer.id}`;
+
+    wrapper.className = 'answer-option';
+    input.className = 'answer-option__input';
+    input.type = 'radio';
+    input.id = inputId;
+    input.name = question.id;
+    input.value = answer.id;
+    input.dataset.value = String(answer.value);
+
+    label.className = 'answer-option__label';
+    label.setAttribute('for', inputId);
+    label.textContent = answer.label;
+
+    wrapper.append(input, label);
+    return wrapper;
+  }
+
+  function renderNote(text) {
+    const item = document.createElement('li');
+    item.textContent = text;
+    return item;
+  }
+
+  function bindEvents(data) {
+    elements.form.addEventListener('change', () => {
+      updateScore(data);
+      syncUrl(data);
+    });
+
+    elements.softwareName.addEventListener('input', () => syncUrl(data));
+
+    if (elements.copyLink) {
+      elements.copyLink.addEventListener('click', copyCurrentLink);
+    }
+  }
+
+  function getAnswer(questionId) {
+    return elements.form.querySelector(`input[name="${cssEscape(questionId)}"]:checked`);
+  }
+
+  function updateScore(data) {
+    const maxPoints = data.questions.reduce((sum, question) => sum + Number(question.weight || 0), 0);
+    const points = data.questions.reduce((sum, question) => {
+      const selected = getAnswer(question.id);
+      const value = selected ? Number(selected.dataset.value) : Number(data.score?.unansweredValue || 0);
+      return sum + value * Number(question.weight || 0);
+    }, 0);
+
+    const min = Number(data.score?.min || 1);
+    const max = Number(data.score?.max || 100);
+    const normalized = maxPoints > 0 ? (points / maxPoints) * max : 0;
+    const score = Math.max(min, Math.min(max, normalized));
+    const rounding = Number(data.score?.rounding || 0);
+    const displayScore = round(score, rounding);
+
+    elements.scoreNumber.textContent = String(displayScore);
+    elements.scoreMeta.textContent = `${round(points, 1)} von ${maxPoints} gewichteten Punkten`;
+    elements.scoreLabel.textContent = findScoreLabel(data, displayScore);
+  }
+
+  function findScoreLabel(data, score) {
+    const label = (data.score?.labels || []).find((entry) => score >= entry.min && score <= entry.max);
+    return label ? label.text : '';
+  }
+
+  function round(value, decimals) {
+    const factor = 10 ** decimals;
+    return Math.round(value * factor) / factor;
+  }
 
   function currentUrl() {
     return new URL(window.location.href);
   }
 
-  function syncUrl() {
+  function syncUrl(data) {
     const url = currentUrl();
-    for (const row of rows) {
 
-      const param = paramByQuestion[row.querySelector('.index-circle').textContent];
-      if (!param) continue;
-
-      const selected = state.get(row);
-      if (selected === 'yes') {
-        url.searchParams.set(param, 'y');
-      } else if (selected === 'no') {
-        url.searchParams.set(param, 'n');
+    data.questions.forEach((question) => {
+      const selected = getAnswer(question.id);
+      if (selected) {
+        url.searchParams.set(question.param || question.id, selected.value);
       } else {
-        url.searchParams.delete(param);
+        url.searchParams.delete(question.param || question.id);
       }
-    }
+    });
 
-    const name = softwareNameEl ? softwareNameEl.value.trim() : '';
+    const name = elements.softwareName.value.trim();
     if (name) {
       url.searchParams.set('name', name);
     } else {
@@ -55,274 +184,61 @@
     window.history.replaceState({}, '', url);
   }
 
-  function applyUrlParams() {
+  function applyUrlParams(data) {
     const url = currentUrl();
+    elements.softwareName.value = url.searchParams.get('name') || '';
 
-    if (softwareNameEl) {
-      softwareNameEl.value = url.searchParams.get('name') || '';
-    }
-
-    for (const row of rows) {
-      const param = paramByQuestion[row.querySelector('.index-circle').textContent];
-      if (!param) continue;
-
-      const value = url.searchParams.get(param);
-      const target = value === 'y'
-        ? row.querySelector('.value.yes')
-        : value === 'n'
-          ? row.querySelector('.value.no')
-          : null;
-
-      if (!target) continue;
-
-      const yes = row.querySelector('.value.yes');
-      const no = row.querySelector('.value.no');
-      yes.classList.remove('selected');
-      no.classList.remove('selected');
-      yes.setAttribute('aria-pressed', 'false');
-      no.setAttribute('aria-pressed', 'false');
-
-      target.classList.add('selected');
-      target.setAttribute('aria-pressed', 'true');
-      state.set(row, value === 'y' ? 'yes' : 'no');
-    }
+    data.questions.forEach((question) => {
+      const value = url.searchParams.get(question.param || question.id);
+      if (!value) return;
+      const selector = `input[name="${cssEscape(question.id)}"][value="${cssEscape(value)}"]`;
+      const input = elements.form.querySelector(selector);
+      if (input) input.checked = true;
+    });
   }
 
   async function copyCurrentLink() {
-    syncUrl();
-
-    const btn = copyLinkBtn;
-    if (!btn) return;
-
-    const originalText = btn.textContent;
+    syncUrl(config);
+    const originalText = elements.copyLink.textContent;
     const link = window.location.href;
 
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(link);
       } else {
-        const fallback = document.createElement('textarea');
-        fallback.value = link;
-        fallback.setAttribute('readonly', '');
-        fallback.style.position = 'fixed';
-        fallback.style.left = '-9999px';
-        document.body.appendChild(fallback);
-        fallback.select();
-        document.execCommand('copy');
-        document.body.removeChild(fallback);
+        copyWithFallback(link);
       }
-
-      btn.textContent = 'Kopiert';
-      btn.disabled = true;
-
-      window.setTimeout(() => {
-        btn.textContent = originalText;
-        btn.disabled = false;
-      }, 1500);
-    } catch (err) {
-      btn.textContent = 'Nicht kopiert';
-      window.setTimeout(() => {
-        btn.textContent = originalText;
-      }, 1500);
-    }
-  }
-
-
-  // Zustand pro Zeile: 'yes' | 'no' | null
-  const state = new Map();
-
-  function calcScore() {
-    // Sonderlogik: Frage 0 entscheidet, ob berechnet wird oder direkt 1 gesetzt wird.
-    const row0 = document.querySelector('.checklist .row:first-child');
-    const yes0 = row0 ? row0.querySelector('.value.yes') : null;
-    const no0 = row0 ? row0.querySelector('.value.no') : null;
-    const connector = document.getElementById('connector');
-
-    const isNoSelected = !!no0 && no0.classList.contains('selected');
-    const isYesSelected = !!yes0 && yes0.classList.contains('selected');
-
-    if (connector) {
-      // Pfeil nur anzeigen, wenn Frage 0 mit "Nein" beantwortet ist
-      connector.style.display = isNoSelected ? 'block' : 'none';
-      if (isNoSelected) {
-        // bei Einblendung neu positionieren
-        drawConnector();
-      }
+      elements.copyLink.textContent = 'Kopiert';
+      elements.copyStatus.textContent = 'Link wurde kopiert.';
+    } catch (_) {
+      elements.copyLink.textContent = 'Nicht kopiert';
+      elements.copyStatus.textContent = 'Link konnte nicht kopiert werden.';
     }
 
-    if (isNoSelected) {
-      // Keine weitere Berechnung: fester SDS 1 (schlechtester Score)
-      scoreEl.textContent = '1';
-      return;
+    elements.copyLink.disabled = true;
+    window.setTimeout(() => {
+      elements.copyLink.textContent = originalText;
+      elements.copyLink.disabled = false;
+      elements.copyStatus.textContent = '';
+    }, 1500);
+  }
+
+  function copyWithFallback(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+  }
+
+  function cssEscape(value) {
+    if (window.CSS && typeof window.CSS.escape === 'function') {
+      return window.CSS.escape(value);
     }
-
-    // Berechnung nur wenn Frage 0 mit Ja beantwortet (oder noch nicht beantwortet)
-    let sum = 0;
-    for (const row of rows) {
-      const sel = row.querySelector('.value.selected');
-      if (!sel) continue;
-      const v = Number(sel.getAttribute('data-value'));
-      if (isFinite(v)) sum += v;
-    }
-    const display = (sum === 0) ? 1 : sum; // 0 -> 1
-    scoreEl.textContent = String(display);
-  }
-
-  function select(row, target) {
-    const yes = row.querySelector('.value.yes');
-    const no = row.querySelector('.value.no');
-    yes.classList.remove('selected');
-    no.classList.remove('selected');
-    yes.setAttribute('aria-pressed', 'false');
-    no.setAttribute('aria-pressed', 'false');
-    if (target === yes) {
-      yes.classList.add('selected');
-      yes.setAttribute('aria-pressed', 'true');
-      state.set(row, 'yes');
-    } else if (target === no) {
-      no.classList.add('selected');
-      no.setAttribute('aria-pressed', 'true');
-      state.set(row, 'no');
-    } else {
-      state.set(row, null);
-    }
-    calcScore();
-    syncUrl();
-  }
-
-  applyUrlParams();
-
-  // Initial: URL-Parameter anwenden und Score berechnen
-  calcScore();
-  drawQ0LineAndArrow();
-
-  if (softwareNameEl) {
-    softwareNameEl.addEventListener('input', syncUrl);
-  }
-
-  if (copyLinkBtn) {
-    copyLinkBtn.addEventListener('click', copyCurrentLink);
-  }
-
-  // Verbindungspfeil vom "Nein" der Zeile 0 zur Score-Box zeichnen
-  function drawConnector() {
-    const svg = document.getElementById('connector');
-    const path = document.getElementById('connectorPath');
-    const head = document.getElementById('connectorHead');
-    const row0 = document.querySelector('.checklist .row:first-child .value.no');
-    const box = document.querySelector('.score-box');
-    if (!svg || !path || !head || !row0 || !box) return;
-    const a = row0.getBoundingClientRect();
-    const b = box.getBoundingClientRect();
-    const root = document.querySelector('.sheet').getBoundingClientRect();
-
-    // Koordinaten relativ zum Sheet (SVG-Bereich)
-    // Startpunkt: etwas weiter rechts neben der rechten Kante des "Nein"-Feldes (laengerer Startstrich)
-    const startOffset = 16; // zuvor 6
-    const x1 = a.right - root.left + startOffset;
-    const y1 = a.top + a.height/2 - root.top;
-    const yScore = b.top + b.height/2 - root.top;
-    const sheetWidth = root.width;
-    const railPad = 8; // vertikale Schiene naeher an die rechte Kante schieben (zuvor 24)
-    const xr = sheetWidth - railPad;
-
-    // Zielanflug: knapp rechts der Score-Box enden, ohne nach rechts auszufedern
-    const stopPad = 12; // Abstand rechts von der Score-Box
-    const desiredStop = (b.right - root.left) + stopPad;
-    const stopRight = Math.min(desiredStop, xr - 6); // nicht weiter rechts als die Schiene - 6px
-
-    // Orthogonaler Pfad: rechts raus, senkrecht runter an der Schiene, dann nach LINKS bis zum Endpunkt vor der Score-Box
-    const d = `M ${x1} ${y1} L ${xr} ${y1} L ${xr} ${yScore} L ${stopRight} ${yScore}`;
-    path.setAttribute('d', d);
-
-    // Pfeilkopf als Polygon (seitlich zeigend nach links): Form wie im Beispiel, skaliert und an Endpunkt ausgerichtet
-    const endX = stopRight - 2;
-    const endY = yScore;
-    const size = 6; // Kopf-Groesse
-    const len = size * 1.5;      // Laenge des Kopfes (von Spitze nach rechts)
-    const halfH = size;        // halbe Hohe des Kopfes
-    // Dreieckiger Kopf, nach links zeigend: Spitze am Endpunkt, Basis rechts
-    const p = [
-      [endX, endY],
-      [endX + len, endY - halfH],
-      [endX + len, endY + halfH],
-    ];
-    const pointsAttr = p.map(([x,y]) => `${x},${y}`).join(' ');
-    head.setAttribute('points', pointsAttr);
-  }
-
-  // Linie/Pfeil unter Frage 0 vorbereiten
-  function drawQ0LineAndArrow() {
-    const row0 = document.querySelector('.checklist .row:first-child');
-    const yes0 = row0 ? row0.querySelector('.value.yes') : null;
-    const overlay = document.getElementById('q0overlay');
-    const lineFull = document.getElementById('q0LineFull');
-    const lineLeft = document.getElementById('q0LineLeft');
-    const lineRight = document.getElementById('q0LineRight');
-    const arrow = document.getElementById('q0Arrow');
-    if (!row0 || !yes0 || !overlay || !lineFull || !lineLeft || !lineRight || !arrow) return;
-
-    // Geometrie bestimmen
-    const root = document.querySelector('.sheet').getBoundingClientRect();
-    const r0 = row0.getBoundingClientRect();
-    const yBox = yes0.getBoundingClientRect();
-
-    const y = r0.bottom - root.top + 12; // mehr Abstand: Linie 12px unter Zeile 0
-    const xStart = r0.left - root.left + 40; // nach Index-Kreis
-    const xEnd = r0.right - root.left; // bis zum rechten Rand der Zeile
-
-    // Standard: durchgehende Linie
-    lineFull.setAttribute('d', `M ${xStart} ${y} L ${xEnd} ${y}`);
-    lineFull.style.display = 'block';
-    lineLeft.style.display = 'none';
-    lineRight.style.display = 'none';
-    arrow.style.display = 'none';
-
-    // Wenn Ja bei 0 ausgewählt: Linie unterbrechen und kleine Pfeilspitze unter die Ja-Box
-    const isYes = yes0.classList.contains('selected');
-    if (isYes) {
-      const gapHalf = 8; // Luecke um die Pfeilspitze herum
-      const cx = yBox.left + yBox.width/2 - root.left;
-      // Links- und Rechtssegmente setzen
-      lineLeft.setAttribute('d', `M ${xStart} ${y} L ${cx - gapHalf} ${y}`);
-      lineRight.setAttribute('d', `M ${cx + gapHalf} ${y} L ${xEnd} ${y}`);
-      lineFull.style.display = 'none';
-      lineLeft.style.display = 'block';
-      lineRight.style.display = 'block';
-      // Pfeilspitze (kleines nach unten zeigendes Dreieck)
-      const size = 5;
-      const points = [
-        [cx, y + 2],
-        [cx - size, y - size],
-        [cx + size, y - size],
-      ].map(([x, yy]) => `${x},${yy}`).join(' ');
-      arrow.setAttribute('points', points);
-      arrow.style.display = 'block';
-    }
-  }
-
-  window.addEventListener('resize', drawConnector);
-  window.addEventListener('load', drawConnector);
-  // Nach Mount einmal zeichnen
-  drawConnector();
-
-  // Events für Linie/Pfeil unter Frage 0
-  window.addEventListener('resize', drawQ0LineAndArrow);
-  window.addEventListener('load', drawQ0LineAndArrow);
-  drawQ0LineAndArrow();
-
-  for (const [index, row] of rows.entries()) {
-    const label = row.querySelector('.question-box');
-    label.id = `q${index + 1}`;
-    row.setAttribute('aria-labelledby', label.id);
-    row.addEventListener('click', (e) => {
-      const el = (e.target instanceof Element) ? e.target : null;
-      const target = el ? el.closest('button.value') : null;
-      if (!target || !row.contains(target)) return;
-      select(row, target);
-      // Linie/Pfeil bei Frage 0 ggf. aktualisieren
-      if (row.matches(':first-child')) drawQ0LineAndArrow();
-    });
-    // Buttons reagieren bereits auf Enter/Space; keine doppelte Keydown-Logik nötig
+    return String(value).replace(/[^a-zA-Z0-9_-]/g, '\\$&');
   }
 })();
