@@ -2,13 +2,13 @@
   "title": "Digitale Souveränität - Checkliste & Berechnung",
   "score": {
     "min": 1,
-    "max": 100,
+    "max": 6,
     "unansweredValue": 0,
-    "rounding": 0,
+    "rounding": 1,
     "labels": [
-      { "min": 1, "max": 39, "text": "niedrig souverän" },
-      { "min": 40, "max": 69, "text": "teilweise souverän" },
-      { "min": 70, "max": 100, "text": "hoch souverän" }
+      { "min": 1, "max": 2, "text": "Niedrig souverän" },
+      { "min": 2.1, "max": 5, "text": "Teilweise souverän" },
+      { "min": 5.1, "max": 6, "text": "Hoch souverän" }
     ]
   },
   "answers": [
@@ -69,7 +69,6 @@
   ],
   "notes": [
     "Der Score wird gewichtet berechnet. Nicht beantwortete Fragen zählen mit 0 Punkten.",
-    "Die Gewichtung und die Fragen können vollständig in dieser JSON-Datei angepasst werden.",
     "Open Source ist hier kein eigenes Kriterium, sondern ein möglicher Indikator für Governance, Transparenz und Weiterführbarkeit."
   ]
 }
