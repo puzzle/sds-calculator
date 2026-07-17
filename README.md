@@ -1,19 +1,22 @@
 Digital Sovereignty Score (SDS) Calculator
 =========================================
 
-A small, static HTML/CSS/JS application that calculates the Digital Sovereignty Score (SDS) based on a short checklist.
+A small, static HTML/CSS/JS application that calculates the Digital Sovereignty Score (SDS) based on a weighted checklist across six dimensions.
 
-- Simple yes/no selection per question
-- Live SDS calculation; special rule: if question 0 is answered "No", the score is immediately 5
+- Three-state answer per question (Ja / Teilweise / Nein), each contributing its individual weight to the score
+- Live SDS calculation as a percentage (0–100%), with a qualitative label (e.g. "hoch ausgeprägt")
+- Questions, weights, and help texts are defined in `questions.json`
+- Accessible by default: native radio inputs per question (screen-reader and keyboard friendly out of the box)
 - No dependencies or build steps (purely static)
 
-Project Structure
-
-- `index.html` – Markup for the checklist and result area
+## Project Structure
+- `index.html` – Markup shell for the checklist and result area (rows are rendered from `questions.json`)
 - `index.css` – Layout and styling in a monochrome blue infographic style
-- `index.js` – Interaction (selection, keyboard access, calculation, lines/arrows)
+- `index.js` – Loads `questions.json`, renders the checklist, handles selection and weighted score calculation
+- `questions.json` – The six dimensions: question text, help text, and weight (must sum to 100)
 
-Run Locally
+  
+## Run Locally
 
 Two straightforward ways to run the project locally:
 
@@ -30,11 +33,11 @@ Two straightforward ways to run the project locally:
      - Open `http://localhost:8000/` in your browser
    - Alternatively: use the VS Code "Live Server" extension and open `index.html`
 
-Development
+## Development
 
-- No toolchain required. Edit `index.html`, `index.css`, or `index.js` directly.
+- No toolchain required. Edit `questions.json`, `index.html`, `index.css`, or `index.js` directly.
 - The code runs without a bundler.
 
-License
+## License
 
 See `LICENSE` in this repository.
