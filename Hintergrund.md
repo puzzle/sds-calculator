@@ -18,6 +18,19 @@ Auf der Basis des ZenDiS Diskussionspapier «Kriterien zur Bewertung von Digital
 - *Bewertungsobjekt:* Der Kalkulator bewertet einen einzelnen Dienst bzw. eine Software, der ZenDiS-Katalog zusätzlich die Organisation als Ganzes. A1 Strategie, A2 IT-Governance & Management, A3 Risikomanagement und teilweise A6 Kompetenzen sind daher nicht als eigene Fragen abgebildet – sie wären eine zweite, organisatorische Bewertungsebene.
 - *Bewusste Verdichtung:* Die 20 ZenDiS-Kriterien wurden auf 6 gewichtete Fragen reduziert, damit ein Self-Assessment in wenigen Minuten machbar ist. Open Source ist kein eigenes Kriterium, sondern Indikator innerhalb der Dimensionen 5 und 6. Dies analog zur ZenDiS-Logik, Souveränität nicht mit dem Lizenzmodell gleichzusetzen.
 
+## Gewichtung
+
+Die Gewichte sind nicht empirisch validiert. Die unserer Meinung nach gut vertretbare Begründung ist folgendermassen:
+
+**Erste Gruppe (je 20 %)** – die «harten» Souveränitätshebel
+Rechtsraum, Exit/Markt und Datenhoheit sind diejenigen Dimensionen, bei denen ein Nein einen faktischen Kontrollverlust bedeutet, der sich nachträglich kaum kompensieren lässt. Sie entsprechen im ZenDiS-Papier den Punkten mit direktem Bezug zu Rechtsrisiko und Abhängigkeitsgrad. Ohne EU-/CH-Rechtsraum nützt Modularität wenig; ohne Datenexport ist jeder Exit theoretisch.
+
+**Zweite Gruppe (je 15 %)** – die Voraussetzungen für Wechselfähigkeit
+Interoperabilität und Betriebsautonomie sind Enabler: Sie machen einen Wechsel praktisch machbar, sind aber im Zweifel mit Aufwand nachrüstbar (Konnektoren, Migrationsprojekte). Sie wirken indirekt auf Dimension 2.
+
+**Dritte Gruppe (10 %)** – die längerfristige Perspektive
+Gestaltungsfähigkeit ist strategisch bedeutsam, wirkt aber über einen längeren Zeithorizont und hängt stärker von der eigenen Organisation ab (Kompetenzen, Ressourcen) als vom Produkt selbst. Deshalb bewusst das niedrigste Gewicht.
+
 ## Lücken
 
 - *C2 Datensicherheit:* Verschlüsselung (Ende-zu-Ende, at rest/in transit), Schlüsselhoheit. Gerade die Frage «Wer hält die Schlüssel?» ist ein zentraler Souveränitätshebel und in keiner unserer sechs Fragen enthalten.
