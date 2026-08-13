@@ -10,6 +10,7 @@
     notesList: document.getElementById('notesList'),
     copyLink: document.getElementById('copyLink'),
     copyStatus: document.getElementById('copyStatus'),
+    resetButton: document.getElementById('resetButton'),
     shareSection: document.getElementById('shareSection')
   };
 
@@ -110,6 +111,20 @@
     if (elements.copyLink) {
       elements.copyLink.addEventListener('click', copyCurrentLink);
     }
+
+    if (elements.resetButton) {
+      elements.resetButton.addEventListener('click', () => resetAll(data));
+    }
+  }
+
+  function resetAll(data) {
+    elements.form.querySelectorAll('input[type="radio"]:checked').forEach((input) => {
+      input.checked = false;
+    });
+    elements.softwareName.value = '';
+
+    updateScore(data);
+    syncUrl(data);
   }
 
   function getAnswer(questionId) {
@@ -186,7 +201,7 @@
   }
 
   async function copyCurrentLink() {
-    syncUrl(config);
+    syncUrl(QUESTIONS);
     const originalText = elements.copyLink.textContent;
     const link = window.location.href;
 

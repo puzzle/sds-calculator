@@ -282,6 +282,10 @@ input {
   gap: 12px;
 }
 
+.reset {
+  margin-left: auto;
+}
+
 .button {
   min-height: 44px;
   border-radius: var(--radius);
