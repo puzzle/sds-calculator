@@ -1,4 +1,4 @@
-{
+const QUESTIONS = {
   "title": "Digitale Souveränität - Checkliste & Berechnung",
   "score": {
     "min": 1,

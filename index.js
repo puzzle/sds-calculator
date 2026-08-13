@@ -1,5 +1,4 @@
 (function () {
-  const CONFIG_URL = './questions.json';
   const elements = {
     title: document.getElementById('page-title'),
     form: document.getElementById('questionsForm'),
@@ -14,29 +13,18 @@
     shareSection: document.getElementById('shareSection')
   };
 
-  let config = null;
-
   init();
 
   async function init() {
     try {
-      config = await loadConfig();
-      renderPage(config);
-      applyUrlParams(config);
-      updateScore(config);
-      bindEvents(config);
+      renderPage(QUESTIONS);
+      applyUrlParams(QUESTIONS);
+      updateScore(QUESTIONS);
+      bindEvents(QUESTIONS);
     } catch (error) {
       elements.form.innerHTML = '<p role="alert">Die Fragen konnten nicht geladen werden.</p>';
       console.error(error);
     }
-  }
-
-  async function loadConfig() {
-    const response = await fetch(CONFIG_URL, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(`Config konnte nicht geladen werden: ${response.status}`);
-    }
-    return response.json();
   }
 
   function renderPage(data) {

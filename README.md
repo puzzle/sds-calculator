@@ -6,15 +6,15 @@ See `HINTERGRUND.md` for background on the methodology and how the dimensions ma
 
 - Three-state answer per question (Ja / Teilweise / Nein), each contributing its individual weight to the score
 - Live SDS calculation as a percentage (0–100%) and a score (0 - 6) with a qualitative label (e.g. "hoch ausgeprägt")
-- Questions, weights, and help texts are defined in `questions.json`
+- Questions, weights, and help texts are defined in `questions.js`
 - Accessible by default: native radio inputs per question (screen-reader and keyboard friendly out of the box)
 - No dependencies or build steps (purely static)
 
 ## Project Structure
-- `index.html` – Markup shell for the checklist and result area (rows are rendered from `questions.json`)
+- `index.html` – Markup shell for the checklist and result area (rows are rendered from `questions.js`)
 - `index.css` – Layout and styling in a monochrome blue infographic style
-- `index.js` – Loads `questions.json`, renders the checklist, handles selection and weighted score calculation
-- `questions.json` – The six dimensions: question text, help text, and weight (must sum to 100)
+- `index.js` – Renders the checklist, handles selection and weighted score calculation
+- `questions.js` – The six dimensions: question text, help text, and weight (must sum to 100)
 
   
 ## Run Locally
@@ -36,7 +36,7 @@ Two straightforward ways to run the project locally:
 
 ## Development
 
-- No toolchain required. Edit `questions.json`, `index.html`, `index.css`, or `index.js` directly.
+- No toolchain required. Edit `questions.js`, `index.html`, `index.css`, or `index.js` directly.
 - The code runs without a bundler.
 
 ## License
