@@ -68,7 +68,7 @@ const QUESTIONS = {
     }
   ],
   "notes": [
-    "Der Score wird gewichtet berechnet. Nicht beantwortete Fragen zählen mit 0 Punkten.",
+    "Der Score (1 - 6) wird gewichtet berechnet. Nicht beantwortete Fragen zählen mit 0 Punkten.",
     "Open Source ist hier kein eigenes Kriterium, sondern ein möglicher Indikator für Governance, Transparenz und Weiterführbarkeit."
   ]
 }

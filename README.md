@@ -5,7 +5,7 @@ A small, static HTML/CSS/JS application that calculates the Digital Sovereignty 
 See `HINTERGRUND.md` for background on the methodology and how the dimensions map to the ZenDiS criteria catalogue.
 
 - Three-state answer per question (Ja / Teilweise / Nein), each contributing its individual weight to the score
-- Live SDS calculation as a percentage (0–100%) and a score (0 - 6) with a qualitative label (e.g. "hoch ausgeprägt")
+- Live SDS calculation as a percentage (0–100%) and a score (1 - 6) with a qualitative label (e.g. "hoch ausgeprägt")
 - Questions, weights, and help texts are defined in `questions.js`
 - Accessible by default: native radio inputs per question (screen-reader and keyboard friendly out of the box)
 - No dependencies or build steps (purely static)
