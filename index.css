@@ -173,7 +173,6 @@ input {
 .question-card__dimension,
 .question-card__question {
   padding: 10px 12px;
-  background: var(--blue-mid);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius);
   line-height: 1.25;
@@ -280,6 +279,10 @@ input {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.share__reset {
+  margin-left: auto;
 }
 
 .button {

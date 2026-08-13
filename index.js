@@ -1,5 +1,4 @@
 (function () {
-  const CONFIG_URL = './questions.json';
   const elements = {
     title: document.getElementById('page-title'),
     form: document.getElementById('questionsForm'),
@@ -11,32 +10,22 @@
     notesList: document.getElementById('notesList'),
     copyLink: document.getElementById('copyLink'),
     copyStatus: document.getElementById('copyStatus'),
+    resetButton: document.getElementById('resetButton'),
     shareSection: document.getElementById('shareSection')
   };
-
-  let config = null;
 
   init();
 
   async function init() {
     try {
-      config = await loadConfig();
-      renderPage(config);
-      applyUrlParams(config);
-      updateScore(config);
-      bindEvents(config);
+      renderPage(QUESTIONS);
+      applyUrlParams(QUESTIONS);
+      updateScore(QUESTIONS);
+      bindEvents(QUESTIONS);
     } catch (error) {
       elements.form.innerHTML = '<p role="alert">Die Fragen konnten nicht geladen werden.</p>';
       console.error(error);
     }
-  }
-
-  async function loadConfig() {
-    const response = await fetch(CONFIG_URL, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(`Config konnte nicht geladen werden: ${response.status}`);
-    }
-    return response.json();
   }
 
   function renderPage(data) {
@@ -120,8 +109,22 @@
     elements.softwareName.addEventListener('input', () => syncUrl(data));
 
     if (elements.copyLink) {
-      elements.copyLink.addEventListener('click', copyCurrentLink);
+      elements.copyLink.addEventListener('click', () => copyCurrentLink(data));
     }
+
+    if (elements.resetButton) {
+      elements.resetButton.addEventListener('click', () => resetAll(data));
+    }
+  }
+
+  function resetAll(data) {
+    elements.form.querySelectorAll('input[type="radio"]:checked').forEach((input) => {
+      input.checked = false;
+    });
+    elements.softwareName.value = '';
+
+    updateScore(data);
+    syncUrl(data);
   }
 
   function getAnswer(questionId) {
@@ -197,8 +200,8 @@
     });
   }
 
-  async function copyCurrentLink() {
-    syncUrl(config);
+  async function copyCurrentLink(data) {
+    syncUrl(data);
     const originalText = elements.copyLink.textContent;
     const link = window.location.href;
 
