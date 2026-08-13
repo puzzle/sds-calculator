@@ -109,7 +109,7 @@
     elements.softwareName.addEventListener('input', () => syncUrl(data));
 
     if (elements.copyLink) {
-      elements.copyLink.addEventListener('click', copyCurrentLink);
+      elements.copyLink.addEventListener('click', () => copyCurrentLink(data));
     }
 
     if (elements.resetButton) {
@@ -200,8 +200,8 @@
     });
   }
 
-  async function copyCurrentLink() {
-    syncUrl(QUESTIONS);
+  async function copyCurrentLink(data) {
+    syncUrl(data);
     const originalText = elements.copyLink.textContent;
     const link = window.location.href;
 
